@@ -2,7 +2,11 @@ const bcrypt = require('bcrypt');
 
 
 function login (req,res){
-    res.render('login/index');
+    if(req.session.loggedin != true){
+        res.render('login/index');
+    } else{
+        res.redirect('/');
+    } 
 }
 
 function auth(req,res){
@@ -10,7 +14,19 @@ function auth(req,res){
     req.getConnection((err, conn) =>{
         conn.query('SELECT * FROM users WHERE email = ?',[data.email], (err, userdata) =>{
             if(userdata.length > 0){
-                console.log('hello');
+                
+                userdata.forEach(element =>{
+                    bcrypt.compare(data.password, element.password, (err, isMatch) =>{
+                        if(!isMatch){
+                            res.render('login/index', {error: 'Error: Contraseña Incorrecta'})
+                        }else{
+                            req.session.loggedin = true;
+                            req.session.name = element.name;
+
+                            res.redirect('/');
+                        }
+                    });
+                });
             }else{
                 res.render('login/index', {error: 'Error: El usuario no existe!'})
             };
@@ -19,7 +35,13 @@ function auth(req,res){
 }
 
 function register (req,res){
-    res.render('login/register');
+    if(req.session.loggedin != true){
+
+        res.render('login/register');
+
+    } else{
+        res.redirect('/');
+    } 
 }
 
 function storeUser(req, res){
@@ -35,6 +57,10 @@ function storeUser(req, res){
                     
                     req.getConnection((err, conn) =>{
                         conn.query('INSERT INTO users SET ?', [data], (err, rows) => {
+                            
+                            req.session.loggedin = true;
+                            req.session.name = data.name;
+                            
                             res.redirect('/');
                         });
                     });
@@ -42,8 +68,13 @@ function storeUser(req, res){
             }
         });
     });
+}
 
-
+function logout(req, res){
+    if(req.session.loggedin == true){
+        req.session.destroy();
+    }
+        res.redirect('/login');
 }
 
 module.exports = {
@@ -51,4 +82,5 @@ module.exports = {
     register,
     storeUser,
     auth,
+    logout,
 }

@@ -21,12 +21,23 @@
         </div>
 
         <ul class="w-1/2 px-16 ml-auto flex justify-end pt-1">
+          {{#if name}}
             <li class="nav-item px-4">
-                <a href="/login" class="nav-link font-semibold hover:bg-green-700 py-3 px-4 rounded-md">Login</a>
+              <p class="font-semibold">{{name}}</p>
+            </li>
+            
+            <li class="nav-item px-4">
+              <a href="/logout" class="nav-link font-semibold bg-red-500 text-white hover:bg-red-700 py-3 px-4 rounded-md">Logout</a>
+            </li>
+
+          {{else}}
+            <li class="nav-item px-4">
+              <a href="/login" class="nav-link font-semibold hover:bg-green-700 py-3 px-4 rounded-md">Login</a>
             </li>
             <li class="nav-item px-4">
-                <a href="/register" class="nav-link font-semibold hover:bg-green-700 py-3 px-4 rounded-md">Register</a>
+              <a href="/register" class="nav-link font-semibold hover:bg-green-700 py-3 px-4 rounded-md">Register</a>
             </li>
+          {{/if}}
         </ul>
 
     </nav>
